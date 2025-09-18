@@ -1,4 +1,4 @@
-package morquecho.string.weathermood
+package morquecho.string.weathermood.presentation.ui.screens
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -36,7 +36,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import morquecho.string.weathermood.ui.theme.WeatherMoodTheme
+import morquecho.string.weathermood.presentation.ui.theme.WeatherMoodTheme
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 ) { innerPadding ->
-                    SearchCity(modifier = Modifier.padding(innerPadding))
+                    SearchCityField(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun SearchCity(modifier: Modifier = Modifier) {
+fun SearchCityField(modifier: Modifier = Modifier) {
     var cityToSearch by remember { mutableStateOf("") }
 
     TextField(
@@ -103,6 +103,6 @@ fun SearchCity(modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     WeatherMoodTheme {
-        SearchCity()
+        SearchCityField()
     }
 }
