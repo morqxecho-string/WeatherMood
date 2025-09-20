@@ -9,7 +9,17 @@ fun WeatherCityDTO.toDomain(): WeatherCity {
     return WeatherCity(
         id = this.id,
         name = this.name,
-        weather = this.weather.map { it.toDomain() }
+        weather = this.weather.map { it.toDomain() },
+        temp = this.main.temp,
+        feelsLike = this.main.feelsLike,
+        tempMin = this.main.tempMin,
+        tempMax = this.main.tempMax,
+        humidity = this.main.humidity,
+        windSpeed = this.wind.speed,
+        windDeg = this.wind.deg,
+        sunrise = this.sys.sunrise,
+        sunset = this.sys.sunset,
+        country = this.sys.country,
     )
 }
 

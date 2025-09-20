@@ -10,6 +10,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
+import morquecho.string.weathermood.BuildConfig
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -20,7 +21,7 @@ object AppModule {
     @Singleton
     @ApiKey
     fun provideApiKey(): String {
-        return "9d6936480990186f862205787bea33b7"
+        return BuildConfig.OPENWEATHER_API_KEY
     }
 
     @Provides
