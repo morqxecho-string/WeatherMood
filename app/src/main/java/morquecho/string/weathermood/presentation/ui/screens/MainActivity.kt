@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -36,13 +39,22 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import morquecho.string.weathermood.presentation.ui.theme.WeatherMoodTheme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    //private val weatherViewModel: WeatherViewModel by viewModels()
+    val weatherViewModel: WeatherViewModel by viewModels()
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             WeatherMoodTheme {
                 Scaffold(
@@ -53,7 +65,11 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 ) { innerPadding ->
-                    SearchCityField(modifier = Modifier.padding(innerPadding))
+                    SearchCityField(
+                        modifier = Modifier.padding(innerPadding))
+
+                    Spacer()
+
                 }
             }
         }
@@ -61,8 +77,15 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun SearchCityField(modifier: Modifier = Modifier) {
+fun cityWeather() {
+
+}
+
+@Composable
+fun SearchCityField(modifier: Modifier = Modifier, viewModel: WeatherViewModel = hiltViewModel()) {
+    val weatherCity by weatherViewModel.state.collectAsStateWithLifecycle()
     var cityToSearch by remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     TextField(
         modifier = modifier
@@ -87,7 +110,8 @@ fun SearchCityField(modifier: Modifier = Modifier) {
             capitalization = KeyboardCapitalization.Words
         ),
         keyboardActions = KeyboardActions(onSearch = {
-
+            weatherViewModel.loadWeatherCity(cityToSearch)
+            keyboardController?.hide()
         }),
         singleLine = true,
         shape = RoundedCornerShape(size = 8.dp),
@@ -101,7 +125,8 @@ fun SearchCityField(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun MainPreview() {
+
     WeatherMoodTheme {
         SearchCityField()
     }

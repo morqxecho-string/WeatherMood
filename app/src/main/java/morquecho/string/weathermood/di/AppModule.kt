@@ -4,17 +4,24 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import jakarta.inject.Singleton
 import morquecho.string.weathermood.data.remote.WeatherAPI
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
     private const val BASE_URL = "https://api.openweathermap.org/"
+
+    @Provides
+    @Singleton
+    @ApiKey
+    fun provideApiKey(): String {
+        return "9d6936480990186f862205787bea33b7"
+    }
 
     @Provides
     @Singleton
