@@ -16,7 +16,6 @@ data class WeatherCity(
     val country: String
 )
 
-// Clases de dominio anidadas para la UI.
 data class Weather(
     val id: Int,
     val main: String,

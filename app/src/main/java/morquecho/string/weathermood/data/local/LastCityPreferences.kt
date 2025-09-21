@@ -11,8 +11,7 @@ import androidx.core.content.edit
 
 @Singleton
 class LastCityPreferences @Inject constructor(@ApplicationContext context: Context) {
-    private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences("last_city_prefs", Context.MODE_PRIVATE)
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("last_city_prefs", Context.MODE_PRIVATE)
 
     private val gson = Gson()
 
