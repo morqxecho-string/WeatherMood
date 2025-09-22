@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">WeatherMood</string>
+    <string name="something_went_wrong_try_again">Something went wrong :( Try again\n\n%1$s</string>
+    <string name="feels_like">Feels like %1$d°</string>
+    <string name="min_temperature">Min %1$d°</string>
+    <string name="max_temperature">Max %1$d°</string>
+    <string name="search_an_us_city">Search an US city…</string>
+    <string name="search_city">Search city</string>
+    <string name="delete_text">Delete text</string>
+    <string name="you_must_write_a_city_in_the_text_field">You must write a city in the text field</string>
+    <string name="temperature_unit">"Temperature Unit: "</string>
+    <string name="search_a_city">Search a city :)</string>
 </resources>

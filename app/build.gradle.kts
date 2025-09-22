@@ -65,16 +65,18 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
+    implementation(libs.androidx.core.splashscreen)
+
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.coil.compose)
 
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.9.23"))
+    implementation(platform(libs.kotlin.bom))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
