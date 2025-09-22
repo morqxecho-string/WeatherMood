@@ -270,6 +270,7 @@ fun WeatherMoodError(uiWeatherState: WeatherUIState) {
 }
 
 // Idea: Adds a share button where the user can share, in text, to different apps, the weather info
+// Adds sunset and sunrise datetime conversion
 @Composable
 fun WeatherCity(uiWeatherState: WeatherUIState) {
     val weatherState = (uiWeatherState as WeatherUIState.Success).data
@@ -366,10 +367,43 @@ fun WeatherCity(uiWeatherState: WeatherUIState) {
                             fontSize = 18.sp
                         )
                     }
+
+                    Text(
+                        text = "Wind speed ${weatherState.windSpeed} m/s",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 18.sp
+                    )
+
+                    Text(
+                        text = "Wind direction ${getWindDirection(weatherState.windDeg)}",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 18.sp
+                    )
                 }
             }
         }
     }
+}
+
+@Composable
+fun getWindDirection(degrees: Int): String {
+    val context = LocalContext.current
+
+    val directions = arrayOf(
+        context.getString(R.string.north),
+        context.getString(R.string.northeast),
+        context.getString(R.string.east),
+        context.getString(R.string.southeast),
+        context.getString(R.string.south),
+        context.getString(R.string.southwest),
+        context.getString(R.string.west),
+        context.getString(R.string.northwest)
+    )
+
+    val adjustedDegrees = (degrees % 360 + 360) % 360
+    val index = ((adjustedDegrees + 22.5) / 45).toInt()
+
+    return directions[index % 8]
 }
 
 @Composable

@@ -10,4 +10,12 @@
     <string name="you_must_write_a_city_in_the_text_field">You must write a city in the text field</string>
     <string name="temperature_unit">"Temperature Unit: "</string>
     <string name="search_a_city">Search a city :)</string>
+    <string name="north">North</string>
+    <string name="northeast">Northeast</string>
+    <string name="east">East</string>
+    <string name="southeast">Southeast</string>
+    <string name="south">South</string>
+    <string name="southwest">Southwest</string>
+    <string name="west">West</string>
+    <string name="northwest">Northwest</string>
 </resources>
