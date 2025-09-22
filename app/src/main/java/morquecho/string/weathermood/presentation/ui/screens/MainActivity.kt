@@ -4,6 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -95,7 +101,7 @@ fun WeatherMood(modifier: Modifier, weatherViewModel: WeatherViewModel = hiltVie
     ) {
         TemperatureScaleDropDownMenu(weatherViewModel)
         SearchCityField()
-        CityWeather(weatherViewModel)
+        WeatherMood(weatherViewModel)
     }
 }
 
@@ -154,11 +160,8 @@ fun unitSelectionConversionInverted(selectedText: String): String {
     }
 }
 
-@Composable
-fun CityWeather(weatherViewModel: WeatherViewModel) {
-    val uiWeatherState by weatherViewModel.uiWeatherState.collectAsState()
-
-    /*val weatherState = WeatherCity(
+//region Test
+/*val weatherState = WeatherCity(
         id = 1,
         name = "Sample City",
         weather = listOf(
@@ -180,128 +183,156 @@ fun CityWeather(weatherViewModel: WeatherViewModel) {
         sunset = 1672574400,
         country = "US"
     )*/
+//endregion
 
-    when (uiWeatherState) {
-        is WeatherUIState.Loading -> {
-            CircularProgressIndicator(
+@Composable
+fun WeatherMood(weatherViewModel: WeatherViewModel) {
+    val uiWeatherState: WeatherUIState by weatherViewModel.uiWeatherState.collectAsState()
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        AnimatedContent(
+            targetState = uiWeatherState,
+            transitionSpec = {
+                (fadeIn() + expandVertically()).togetherWith(fadeOut() + shrinkHorizontally())
+            }
+        ) { targetState ->
+            when (targetState) {
+                is WeatherUIState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .padding(50.dp)
+                    )
+                }
+                is WeatherUIState.Success -> {
+                    WeatherCity(targetState);
+                }
+                is WeatherUIState.Error -> {
+                    WeatherMoodError(targetState);
+                }
+                is WeatherUIState.Initial -> {
+                    WeatherMoodSearchCity()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun WeatherMoodSearchCity() {
+    Text(
+        text = "Search a city :)",
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp, 5.dp, 20.dp, 5.dp),
+        color = MaterialTheme.colorScheme.onSurface
+    )
+}
+
+@Composable
+fun WeatherMoodError(uiWeatherState: WeatherUIState) {
+    val error = (uiWeatherState as WeatherUIState.Error).message
+
+    Text(
+        text = "Something went wrong :( Try again\n\n$error",
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp, 5.dp, 20.dp, 5.dp),
+        color = MaterialTheme.colorScheme.onSurface
+    )
+}
+
+@Composable
+fun WeatherCity(uiWeatherState: WeatherUIState) {
+    val weatherState = (uiWeatherState as WeatherUIState.Success).data
+
+    val weather: Weather = weatherState.weather[0];
+
+    Column(
+        modifier = Modifier
+            .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Card(
+            modifier = Modifier,
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.DarkGray
+            )
+        ) {
+            //City
+            Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .size(48.dp)
-                    .padding(50.dp),
+                    .padding(10.dp),
+                text = "${weatherState.name}, ${weatherState.country}",
+                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = 24.sp,
+                textAlign = TextAlign.Center
             )
-        }
-        is WeatherUIState.Success -> {
-            val weatherState = (uiWeatherState as WeatherUIState.Success).data
 
-            val weather: Weather = weatherState.weather[0];
-
-            Column(
+            Row(
                 modifier = Modifier
-                    .padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Card(
-                    modifier = Modifier,
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.DarkGray
-                    )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    //City
+                    //icon
+                    WeatherIcon(weather.icon)
+
                     Text(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp),
-                        text = "${weatherState.name}, ${weatherState.country}",
+                            .padding(20.dp),
+                        text = weather.description.replaceFirstChar { it.titlecase() },
                         color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 24.sp,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                    )
+                }
+
+                Column(
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    //weather
+                    Text(
+                        text = "${weatherState.temp.roundToInt()}°",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 50.sp
+                    )
+
+                    Text(
+                        text = "Feels like ${weatherState.feelsLike.roundToInt()}°",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 20.sp
                     )
 
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                            .fillMaxWidth()
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            //icon
-                            WeatherIcon(weather.icon)
+                        //min
+                        Text(
+                            modifier = Modifier
+                                .padding(0.dp, 0.dp, 10.dp, 0.dp),
+                            text = "Min ${weatherState.tempMin.roundToInt()}°",
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = 18.sp
+                        )
 
-                            Text(
-                                modifier = Modifier
-                                    .padding(20.dp),
-                                text = weather.description.replaceFirstChar { it.titlecase() },
-                                color = MaterialTheme.colorScheme.onSurface,
-                                textAlign = TextAlign.Center,
-                            )
-                        }
-
-                        Column(
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            //weather
-                            Text(
-                                text = "${weatherState.temp.roundToInt()}°",
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 50.sp
-                            )
-
-                            Text(
-                                text = "Feels like ${weatherState!!.feelsLike.roundToInt()}°",
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 20.sp
-                            )
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                //min
-                                Text(
-                                    modifier = Modifier
-                                        .padding(0.dp, 0.dp, 10.dp, 0.dp),
-                                    text = "Min ${weatherState.tempMin.roundToInt()}°",
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = 18.sp
-                                )
-
-                                //max
-                                Text(
-                                    text = "Max ${weatherState.tempMax.roundToInt()}°",
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = 18.sp
-                                )
-                            }
-                        }
+                        //max
+                        Text(
+                            text = "Max ${weatherState.tempMax.roundToInt()}°",
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = 18.sp
+                        )
                     }
                 }
             }
-        }
-        is WeatherUIState.Error -> {
-            val error = (uiWeatherState as WeatherUIState.Error).message
-
-            Text(
-                text = "Something went wrong :( Try again\n\n$error",
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(20.dp, 5.dp, 20.dp, 5.dp),
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-        is WeatherUIState.Initial -> {
-            Text(
-                text = "Search a city :)",
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(20.dp, 5.dp, 20.dp, 5.dp),
-                color = MaterialTheme.colorScheme.onSurface
-            )
         }
     }
 }
